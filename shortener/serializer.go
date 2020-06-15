@@ -1,6 +1,7 @@
 package shortener
 
-type Serializer interface {
-	Encode(input []byte) (*Shortener, error)
-	Decode(input *Shortener) ([]byte, error)
+// ISerializer interface...
+type ISerializer interface {
+	Decode(input []byte) (*Shortener, error)
+	Encode(input *Shortener) ([]byte, error)
 }

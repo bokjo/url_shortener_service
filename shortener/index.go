@@ -2,6 +2,7 @@ package shortener
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"time"
 
@@ -13,17 +14,17 @@ var (
 	// ErrorShortenerNotFound custom not found error
 	ErrorShortenerNotFound = errors.New("Short url not found")
 	// ErrorShortenerInvalidURL custom invalid error
-	ErrorShortenerInvalidURL = errors.New("Invalid short url")
+	ErrorShortenerInvalidURL = errors.New("Invalid url, please provide valid url with protocol scheme")
 )
 
 type shortenerService struct {
-	shortenerRepo *ShortenerRepository
+	shortenerRepo ShortenerRepository
 }
 
 // NewShortenerService generates new ShortenerService instance
-func NewShortenerService(shortenerRepo *ShortenerRepository) ShortenerService {
+func NewShortenerService(shortenerRepo ShortenerRepository) ShortenerService {
 	return &shortenerService{
-		shortenerRepo: shortenerRepo,
+		shortenerRepo,
 	}
 }
 
@@ -32,9 +33,15 @@ func (ss *shortenerService) Get(code string) (*Shortener, error) {
 }
 
 func (ss *shortenerService) Store(shortener *Shortener) error {
-	if _, err := url.Parse(shortener.URL); err != nil {
+	// TODO: better url parsing is needed (we must enforce the scheme (http/https) as part of the url)
+	parsedURL, err := url.Parse(shortener.URL)
+	fmt.Printf("%T, %#v\n", parsedURL.Path, parsedURL.Path)
+	fmt.Println(err)
+	if err != nil || parsedURL.Scheme == "" {
 		return errs.Wrap(ErrorShortenerInvalidURL, "service.Shortener.Store")
 	}
+
+	// TODO: we must use some consistent hashing mechanism, so duplicate url will be stored more efficiently
 	shortener.Code = shortid.MustGenerate()
 	shortener.CreatedAt = time.Now().Unix()
 
