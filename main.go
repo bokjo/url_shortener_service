@@ -19,7 +19,8 @@ func main() {
 	fmt.Println("Hello, World!")
 
 	// Init data source, example Redis repo instance
-	redisURL := "redis://localhost:6379"
+	// redisURL := "redis://localhost:6379"
+	redisURL := "redis://redisurlshortener"
 	repo, err := r.NewRedisRepository(redisURL)
 
 	if err != nil {

@@ -4,5 +4,14 @@ version: "3"
 services:
     redis:
         image: redis:5
+        container_name: redisurlshortener
         ports:
             - "6379:6379"
+        
+    api:
+        image: shortenerapi:latest 
+        container_name: shortener_api
+        depends_on: 
+            - redis
+        ports:
+            - "1234:1234"
